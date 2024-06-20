@@ -141,8 +141,8 @@ int main(void)
 	  	  {
 
 	  		  char value_string[4];
-	  		  //int decimal = 0;
-	  		  resistor_value = round(10 * pow(10, ((double)i/24))) * 100/10;
+	  		  int decimal = 0;
+	  		  resistor_value = round(10 * pow(10, ((double)i/24))) * /10;
 	  		  lcd_put_cur(0, 0);
 	  		  lcd_send_string("Value:");
 	  		  lcd_put_cur(0, 6);
@@ -162,7 +162,7 @@ int main(void)
 
 	  		  //lcd_clear();
     /* USER CODE END WHILE */
-	  	  }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
