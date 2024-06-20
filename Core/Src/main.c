@@ -147,7 +147,7 @@ int main(void)
 		  sprintf(value_string, "%d", (int)resistor_value);
  		  lcd_send_string(value_string);
 		  lcd_put_cur(0, 9);
-		  lcd_send_string("k        ");
+		  lcd_send_string("k       ");
 
 		  /*HAL_Delay(1000);
 		  lcd_put_cur(0, 9);
