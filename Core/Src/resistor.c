@@ -5,26 +5,47 @@
  *      Author: Rafael Reyes
  */
 
-#include "resistor_measurement.h"
+#include "resistor.h"
+#include "math.h"
 
+extern ADC_HandleTypeDef hadc1;
+
+
+double decade = 0;
+double raw_value = 0;
+int r_standard = 0;
+double r_percentage = 0;
+double Eseries = 48;
+
+
+uint16_t GET_ADC_IN4(void)
+{
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, 100);
+
+	uint16_t i = HAL_ADC_GetValue(&hadc1);
+
+	HAL_ADC_Stop(&hadc1);
+
+	return i;
+}
 
 double R_value(void)
 {
   double r_value;
-  int raw = analogRead(0);
+  int raw = GET_ADC_IN4();
   double voltage_value;
-
 
   voltage_value = ((double)raw/1023); // percentage of total voltage
 
   r_value = ((decade*5.1)/voltage_value)-(decade*5.1);
 
-  Serial.println(r_value);
-
-  r_measured = r_value;
-
-  Serial.print(r_value);
   return r_value;
+}
+
+void deca(void)
+{
+	decade = 100;
 }
 
 double resistor_error(double raw_value)
@@ -36,8 +57,6 @@ double resistor_error(double raw_value)
 
   r_percentage = error_percentage;
 
-  Serial.print(" ");
-  Serial.println(error_percentage);
 
   return error_percentage;
 }
@@ -59,40 +78,17 @@ double resistor_match(double raw_value)
 
   r_standard = r_value;
 
-  Serial.print(" ");
-  Serial.print(r_value);
-
   return r_value;
 }
 
 void color_code(int band_number)
 {
-  switch(band_number)
-  {
-    case 0: Serial.print("Black ");
-     break;
-    case 1: Serial.print("Brown ");
-     break;
-    case 2: Serial.print("Red ");
-     break;
-    case 3: Serial.print("Orange ");
-     break;
-    case 4: Serial.print("Yellow ");
-     break;
-    case 5: Serial.print("Green ");
-     break;
-    case 6: Serial.print("Blue ");
-     break;
-    case 7: Serial.print("Violet ");
-     break;
-    case 8: Serial.print("Gray ");
-     break;
-    case 9: Serial.print("White ");
-     break;
-  }
+
 }
 
 void flush()
 {
-  double r_measured, r_standard, r_percentage = NULL;
+  raw_value = 0;
+  r_standard = 0;
+  r_percentage = 0;
 }

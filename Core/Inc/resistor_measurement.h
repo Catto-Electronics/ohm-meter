@@ -10,9 +10,9 @@
 
 #include "stm32u0xx_hal.h"
 
-void double R_value(void);
-void double resistor_error(double raw_value);
-void double resistor_match(double raw_value);
+double R_value(void);
+double resistor_error(double raw_value);
+double resistor_match(double raw_value);
 void band_code(int band_number);
 void flush();
 

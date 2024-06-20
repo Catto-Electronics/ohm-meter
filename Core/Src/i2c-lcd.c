@@ -14,7 +14,9 @@ extern I2C_HandleTypeDef hi2c1;  // change your handler here accordingly
 #define D6_BIT 6 // Data 6 bit
 #define D7_BIT 7 // Data 7 bit
 
+
 uint8_t backlight = 1;
+
 
 void lcd_send_cmd (char cmd)
 {
