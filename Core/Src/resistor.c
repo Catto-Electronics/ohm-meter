@@ -10,10 +10,7 @@
 
 extern ADC_HandleTypeDef hadc1;
 
-struct param
-{
 
-};
 	double decade = 0;
 	double raw_value = 0;
 	int r_standard = 0;

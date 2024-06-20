@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -23,7 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "stdlib.h"
-#include "resistor_measurement.h"
+#include "resistor.h"
 #include "i2c-lcd.h"
 #include "math.h"
 /* USER CODE END Includes */
@@ -44,6 +44,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
+COM_InitTypeDef BspCOMInit;
 ADC_HandleTypeDef hadc1;
 
 I2C_HandleTypeDef hi2c1;
@@ -100,71 +102,64 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
-  lcd_init();
-  HAL_Delay(1);
+	lcd_init();
+	HAL_Delay(1);
 
-  lcd_put_cur(0, 0);
-  lcd_send_string("     CATTO      ");
-  lcd_put_cur(1, 0);
-  lcd_send_string("  ELECTRONICS   ");
-  HAL_Delay(1000);
+	lcd_put_cur(0, 0);
+	lcd_send_string("     CATTO      ");
+	lcd_put_cur(1, 0);
+	lcd_send_string("  ELECTRONICS   ");
+	HAL_Delay(1000);
 
-  lcd_put_cur(0, 0);
-  lcd_send_string("   OHM  METER   ");
-  lcd_put_cur(1, 0);
-  lcd_send_string("                ");
-  HAL_Delay(1000);
+	lcd_put_cur(0, 0);
+	lcd_send_string("   OHM  METER   ");
+	lcd_put_cur(1, 0);
+	lcd_send_string("                ");
+	HAL_Delay(1000);
 
   /* USER CODE END 2 */
 
+  /* Initialize leds */
+  BSP_LED_Init(LED_GREEN);
+
+  /* Initialize User push-button without interrupt mode. */
+  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
+
+  /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
+  BspCOMInit.BaudRate   = 115200;
+  BspCOMInit.WordLength = COM_WORDLENGTH_8B;
+  BspCOMInit.StopBits   = COM_STOPBITS_1;
+  BspCOMInit.Parity     = COM_PARITY_NONE;
+  BspCOMInit.HwFlowCtl  = COM_HWCONTROL_NONE;
+  if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
+  {
+    Error_Handler();
+  }
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  double resistor_value = 0;
+	while (1)
+	{
+		double resistor_value = 0;
 
-	  	  lcd_put_cur(0, 0);
-	  	  lcd_send_string("Select E-Series ");
-	  	  lcd_put_cur(1, 0);
-	  	  lcd_send_string("6 12  24  48  96");
-	  	  HAL_Delay(3000);
+		lcd_put_cur(0, 0);
+		lcd_send_string("Select E-Series ");
+		lcd_put_cur(1, 0);
+		lcd_send_string("6 12  24  48  96");
+		HAL_Delay(3000);
 
-	  	  lcd_put_cur(0, 0);
-	  	  lcd_send_string("Value:120.8k    ");
-	  	  lcd_put_cur(1, 0);
-	  	  lcd_send_string("Std:120k ");
-	  	  lcd_put_cur(1, 9);
-	  	  lcd_send_string("Er:0.1%");
-	  	  HAL_Delay(3000);
+		lcd_put_cur(0, 0);
+		lcd_send_string("Value:120.8k    ");
+		lcd_put_cur(1, 0);
+		lcd_send_string("Std:120k ");
+		lcd_put_cur(1, 9);
+		lcd_send_string("Er:0.1%");
+		HAL_Delay(3000);
 
-	  	  for(int i = 0; i < 24; i++)
-	  	  {
-
-	  		  char value_string[4];
-	  		  int decimal = 0;
-	  		  resistor_value = round(10 * pow(10, ((double)i/24))) * /10;
-	  		  lcd_put_cur(0, 0);
-	  		  lcd_send_string("Value:");
-	  		  lcd_put_cur(0, 6);
-	  		  sprintf(value_string, "%d", (int)resistor_value);
-	   		  lcd_send_string(value_string);
-	  		  lcd_put_cur(0, 9);
-	  		  lcd_send_string("k       ");
-
-	  		  /*HAL_Delay(1000);
-	  		  lcd_put_cur(0, 9);
-	  		  lcd_send_string(".");
-	  		  lcd_put_cur(0, 10);
-	  		  decimal = (int)(decade*10*resistor_value);
-	  		  sprintf(value_string, "%d", decimal%1000);
-	  		  lcd_send_string(value_string);*/
-	  		  HAL_Delay(250);
-
-	  		  //lcd_clear();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 
@@ -321,39 +316,12 @@ static void MX_I2C1_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(User_LED_GPIO_Port, User_LED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : User_button_Pin */
-  GPIO_InitStruct.Pin = User_button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(User_button_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : USART2_TX_Pin USART2_RX_Pin */
-  GPIO_InitStruct.Pin = USART2_TX_Pin|USART2_RX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : User_LED_Pin */
-  GPIO_InitStruct.Pin = User_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(User_LED_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -370,11 +338,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -389,7 +356,7 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
+	/* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
