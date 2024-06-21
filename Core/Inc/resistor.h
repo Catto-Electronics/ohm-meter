@@ -1,13 +1,34 @@
+#ifndef RESISTOR_INCLUDED
+#define RESISTOR_INCLUDED
+
+
 #include "stm32u0xx_hal.h"
 
-uint16_t GET_ADC_IN4(void);
-double R_value(void);
-double resistor_error(double raw_value);
-double resistor_match(double raw_value);
 
-void band_code(int band_number);
+typedef struct R_paramTypeDef
+{
+  double decade;
+  double Eseries;
 
-void flush();
+  uint16_t r_ADC;
 
-void deca(void);
+  double r_measured;
+  double r_standard;
+  double r_percentage;
 
+} R_paramTypeDef;
+
+
+void resistor_value(void);
+void resistor_error(void);
+
+void resistor_match(void);
+
+void resistor_decade(void);
+
+void resistor_band(int band_number);
+
+void resistor_flush();
+
+
+#endif

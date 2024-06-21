@@ -1,5 +1,5 @@
 /*
- * resistore_measurement.c
+ * resistor.c
  *
  *  Created on: Jun 19, 2024
  *      Author: Rafael Reyes
@@ -8,88 +8,85 @@
 #include "resistor.h"
 #include "math.h"
 
-extern ADC_HandleTypeDef hadc1;
+
+extern R_paramTypeDef R_config;
+extern R_paramTypeDef empty;    // Reference for flushing values from previous iteration
 
 
-	double decade = 0;
-	double raw_value = 0;
-	int r_standard = 0;
-	double r_percentage = 0;
-	double Eseries = 48;
-
-
-
-uint16_t GET_ADC_IN4(void)
+void resisor_value(void)        // Reads the ADC output and converts it into the value of the measured resistor in ohms
 {
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, 100);
 
-	uint16_t i = HAL_ADC_GetValue(&hadc1);
-
-	HAL_ADC_Stop(&hadc1);
-
-	return i;
-}
-
-double R_value(void)
-{
-	double r_value;
-	int raw = GET_ADC_IN4();
+	double raw = R_config.r_ADC;
+	double decade = R_config.decade;
 	double voltage_value;
 
-	voltage_value = ((double)raw/1023); // percentage of total voltage
+	voltage_value = ((double)raw/4096); // percentage of total voltage
 
-	r_value = ((decade*5.1)/voltage_value)-(decade*5.1);
+	R_config.r_measured = ((decade*5.1)/voltage_value)-(decade*5.1);
 
-	return r_value;
 }
 
-void deca(void)
-{
-	decade = 100;
-}
 
-double resistor_error(double raw_value)
+void resistor_error(void)       // Calculates the percent error of the measured resistor value with the closest standard value in the series
 {
+
 	double error_percentage;
-	double std_value = resistor_match(raw_value);
+	double measured = R_config.r_measured;
+	double std_value = R_config.r_standard;
 
-	error_percentage = ((raw_value - std_value) / std_value) * 100;
+	error_percentage = ((measured - std_value) / std_value) * 100;
 
-	r_percentage = error_percentage;
+	R_config.r_percentage = error_percentage;
 
-
-	return error_percentage;
 }
 
-double resistor_match(double raw_value)
+
+void resistor_match(void)       // Finds the nearest standard resistor value from the measured resistor
 {
-	double r_value;
+
+	double Eseries = R_config.Eseries;
+	double decade = R_config.decade;
+	double measured = R_config.r_measured;
+	double std_value;
 	double r_index;
 
-	r_index = round(Eseries*(log10(raw_value/decade)));
+	r_index = round(Eseries*(log10(measured/decade)));
 
-	r_value = round(decade*pow(10, r_index/Eseries)/(decade/10));
-	r_value *= decade/10;
+	std_value = round(decade*pow(10, r_index/Eseries)/(decade/10));
+	std_value *= decade/10;
 
 	if(Eseries == 24 && (int)r_index%24 >= 11 && (int)r_index%24 <= 17)
 	{
-		r_value += 1*decade/10;
+		std_value += 1*decade/10;
 	}
 
-	r_standard = r_value;
-
-	return r_value;
-}
-
-void color_code(int band_number)
-{
+	R_config.r_standard = std_value;
 
 }
 
-void flush()
+
+void resistor_decade(void)
 {
-	raw_value = 0;
-	r_standard = 0;
-	r_percentage = 0;
+
+
+
+}
+
+
+void resistor_band(int band_number) // Determines the color bands of the measured resistor
+{
+
+
+
+}
+
+
+void resistor_flush()
+{
+
+	R_config.r_ADC = 0;
+	R_config.r_measured = 0;
+	R_config.r_percentage = 0;
+	R_config.r_standard = 0;
+
 }
