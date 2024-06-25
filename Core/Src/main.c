@@ -163,6 +163,15 @@ int main(void)
 		R_config.r_ADC = GET_ADC_IN4();
 
 
+
+
+
+
+
+
+
+
+
 		lcd_put_cur(0, 0);
 		lcd_send_string("Value:120.8k    ");
 		lcd_put_cur(1, 0);
