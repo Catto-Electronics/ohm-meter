@@ -8,6 +8,7 @@
 #include "resistor.h"
 #include "math.h"
 
+#define R_MUX 3.3
 
 extern R_paramTypeDef R_config;
 extern R_paramTypeDef empty;    // Reference for flushing values from previous iteration
@@ -17,12 +18,14 @@ void resisor_value(void)        // Reads the ADC output and converts it into the
 {
 
 	double raw = R_config.r_ADC;
-	double decade = R_config.decade;
-	double voltage_value;
+	double decade = R_config.decade * R_MUX;
+	double ADC_ratio;
 
-	voltage_value = ((double)raw/4096); // percentage of total voltage
+	ADC_ratio = ((double)raw/4096); // percentage of total voltage
 
-	R_config.r_measured = ((decade*5.1)/voltage_value)-(decade*5.1);
+	//R_config.r_measured = ((decade)/ADC_ratio)-(decade);
+
+	R_config.r_measured = (ADC_ratio * decade)/(1 - ADC_ratio);
 
 }
 
