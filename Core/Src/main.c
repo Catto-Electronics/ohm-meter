@@ -78,6 +78,7 @@ int col = 0;
 
 double decade = 100;
 double Eseries = 24;
+
 /* USER CODE END 0 */
 
 /**
