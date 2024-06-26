@@ -7,6 +7,7 @@
 
 typedef struct R_paramTypeDef
 {
+
   double decade;
   double Eseries;
 
@@ -19,7 +20,7 @@ typedef struct R_paramTypeDef
 } R_paramTypeDef;
 
 
-void resistor_value(void);
+uint32_t resistor_value(void);
 void resistor_error(void);
 
 void resistor_match(void);

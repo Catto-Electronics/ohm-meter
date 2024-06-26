@@ -14,25 +14,36 @@ extern R_paramTypeDef R_config;
 extern R_paramTypeDef empty;    // Reference for flushing values from previous iteration
 
 
-void resisor_value(void)        // Reads the ADC output and converts it into the value of the measured resistor in ohms
+
+/**************************************************
+Brief: Reads the ADC output and converts it into the value of the measured resistor in ohms
+Return: Resistance in Ohms
+***************************************************/
+uint32_t resisor_value(double decade)
 {
 
 	double raw = R_config.r_ADC;
-	double decade = R_config.decade * R_MUX;
+	double decade_resistor = decade * R_MUX;
 	double ADC_ratio;
+	double resistor_value;
 
 	ADC_ratio = ((double)raw/4096); // percentage of total voltage
 
-	//R_config.r_measured = ((decade)/ADC_ratio)-(decade);
+	//R_config.r_measured = ((decade)/ADC_ratio)-(decade); // Old ADC to Resistance conversion
 
-	R_config.r_measured = (ADC_ratio * decade)/(1 - ADC_ratio);
+	resistor_value = (ADC_ratio * decade_resistor)/(1 - ADC_ratio);
 
+	return resistor_value;
 }
 
 
-void resistor_error(void)       // Calculates the percent error of the measured resistor value with the closest standard value in the series
+/**************************************************
+Brief: Calculates the percent error of the measured resistor
+	   value with the closest standard value in the series
+Return: NONE
+***************************************************/
+void resistor_error(void)
 {
-
 	double error_percentage;
 	double measured = R_config.r_measured;
 	double std_value = R_config.r_standard;
@@ -44,7 +55,11 @@ void resistor_error(void)       // Calculates the percent error of the measured 
 }
 
 
-void resistor_match(void)       // Finds the nearest standard resistor value from the measured resistor
+/**************************************************
+Brief: Finds the nearest standard resistor value from the measured resistor
+Return: NONE
+***************************************************/
+void resistor_match(void)
 {
 
 	double Eseries = R_config.Eseries;
@@ -68,15 +83,29 @@ void resistor_match(void)       // Finds the nearest standard resistor value fro
 }
 
 
+/**************************************************
+Brief: Sorts through measured values and determines the appropriate decade
+Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
+***************************************************/
 void resistor_decade(void)
 {
 
-
-
+	for(double decade = 1000000; decade >= 1; decade /= 10)
+	{
+		if(resisor_value(decade) >= decade)
+		{
+			R_config.decade = decade;
+			R_config.r_measured = resisor_value(decade);
+		}
+	}
 }
 
 
-void resistor_band(int band_number) // Determines the color bands of the measured resistor
+/**************************************************
+Brief: Determines the color bands of the measured resistor
+Return: NONE
+***************************************************/
+void resistor_band(int band_number)
 {
 
 
@@ -84,6 +113,10 @@ void resistor_band(int band_number) // Determines the color bands of the measure
 }
 
 
+/**************************************************
+Brief: Resets all values in struct R_config
+Return: NONE
+***************************************************/
 void resistor_flush()
 {
 

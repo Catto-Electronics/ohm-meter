@@ -76,9 +76,6 @@ uint16_t GET_ADC_IN4(void);
 int row = 0;
 int col = 0;
 
-double decade = 100;
-double Eseries = 24;
-
 /* USER CODE END 0 */
 
 /**
