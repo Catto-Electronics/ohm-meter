@@ -27,7 +27,9 @@ void resistor_match(void);
 
 void resistor_decade(void);
 
-void resistor_band(int band_number);
+void resistor_parse(void);
+
+void resistor_band(uint8_t band_value);
 
 void resistor_flush();
 

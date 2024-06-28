@@ -5,14 +5,15 @@
  *      Author: Rafael Reyes
  */
 
+#include "stdio.h"
 #include "resistor.h"
+#include "i2c-lcd.h"
 #include "math.h"
 
 #define R_MUX 3.3
 
 extern R_paramTypeDef R_config;
 extern R_paramTypeDef empty;    // Reference for flushing values from previous iteration
-
 
 
 /**************************************************
@@ -51,7 +52,6 @@ void resistor_error(void)
 	error_percentage = ((measured - std_value) / std_value) * 100;
 
 	R_config.r_percentage = error_percentage;
-
 }
 
 
@@ -90,14 +90,35 @@ Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
 void resistor_decade(void)
 {
 
-	for(double decade = 1000000; decade >= 1; decade /= 10)
-	{
-		if(resisor_value(decade) >= decade)
+	double decade = 100;
+
+		if((resisor_value(decade) >= decade) && (resisor_value(decade) < decade*10))
 		{
 			R_config.decade = decade;
 			R_config.r_measured = resisor_value(decade);
 		}
-	}
+
+}
+
+/**************************************************
+Brief: Parses the standard resistor values to determine the resistor band colors
+Return: NONE
+***************************************************/
+void resistor_parse(void)
+{
+	R_config.r_standard = 120;
+	R_config.decade = 100;
+
+	uint32_t Std = R_config.r_standard;
+
+	lcd_put_cur(0, 0);
+
+	resistor_band((uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band((uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	//resistor_band(Std % (decade/100)); // Third band value
+
+	resistor_band(log10(R_config.decade));      // Decade multiplier
+
 }
 
 
@@ -105,10 +126,42 @@ void resistor_decade(void)
 Brief: Determines the color bands of the measured resistor
 Return: NONE
 ***************************************************/
-void resistor_band(int band_number)
+void resistor_band(uint8_t band_value)
 {
 
-
+	switch(band_value)
+	{
+		case 0:
+			lcd_send_string("BK");
+			break;
+		case 1:
+			lcd_send_string("BR");
+			break;
+		case 2:
+			lcd_send_string("R");
+			break;
+		case 3:
+			lcd_send_string("O");
+			break;
+		case 4:
+			lcd_send_string("Y");
+			break;
+		case 5:
+			lcd_send_string("G");
+			break;
+		case 6:
+			lcd_send_string("B");
+			break;
+		case 7:
+			lcd_send_string("V");
+			break;
+		case 8:
+			lcd_send_string("GY");
+			break;
+		case 9:
+			lcd_send_string("W");
+			break;
+	}
 
 }
 
