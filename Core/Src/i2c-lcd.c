@@ -61,8 +61,15 @@ void lcd_put_cur(int row, int col)
             col |= 0x80;
             break;
         case 1:
-            col |= 0xC0;
+            col |= 0x80 + 0x40;
             break;
+        case 2:
+            col |= 0x80 + 0x14;
+            break;
+        case 3:
+            col |= 0x80 + 0x54;
+            break;
+
     }
 
     lcd_send_cmd (col);

@@ -167,15 +167,15 @@ int main(void)
 
 		lcd_put_cur(0, 0);
 		lcd_send_string("Value:");
-		lcd_put_cur(6, 0);
+		lcd_put_cur(0, 6);
 		sprintf(meas, "%.3f   ", R_config.r_measured);
 		lcd_send_string(meas);
 		lcd_put_cur(1, 0);
 		lcd_send_string("Std:");
 		lcd_put_cur(1, 4);
-		sprintf(match, "%.1f  ", R_config.r_standard);
+		sprintf(match, "%f  ", R_config.r_standard);
 		lcd_send_string(match);
-		lcd_put_cur(1, 9);
+		lcd_put_cur(2, 9);
 		lcd_send_string("Er:");
 		lcd_put_cur(1, 12);
 		sprintf(er, "%.1f%%", R_config.r_percentage);
