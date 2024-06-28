@@ -20,7 +20,7 @@ typedef struct R_paramTypeDef
 } R_paramTypeDef;
 
 
-uint32_t resistor_value(void);
+uint32_t resistor_value(double decade);
 void resistor_error(void);
 
 void resistor_match(void);
@@ -29,9 +29,9 @@ void resistor_decade(void);
 
 void resistor_parse(void);
 
-void resistor_band(uint8_t band_value);
+void resistor_band(uint8_t band_number, uint8_t band_value);
 
-void resistor_flush();
+void resistor_flush(void);
 
 
 #endif

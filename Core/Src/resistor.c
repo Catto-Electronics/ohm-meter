@@ -113,11 +113,26 @@ void resistor_parse(void)
 
 	lcd_put_cur(0, 0);
 
-	resistor_band((uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band((uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
-	//resistor_band(Std % (decade/100)); // Third band value
 
-	resistor_band(log10(R_config.decade));      // Decade multiplier
+	/**************************************************
+	Brief: Get 4-band resistor colors
+	***************************************************/
+	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	if(Std < 100)
+		resistor_band(Std % (decade/100)); // Third band value
+
+	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
+
+	/**************************************************
+	Brief: Get 5-band resistor colors
+	***************************************************/
+	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	if(Std < 100)
+		resistor_band(Std % (decade/100)); // Third band value
+
+	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
 
 }
 
@@ -126,39 +141,61 @@ void resistor_parse(void)
 Brief: Determines the color bands of the measured resistor
 Return: NONE
 ***************************************************/
-void resistor_band(uint8_t band_value)
+void resistor_band(uint8_t band_number, uint8_t band_value)
 {
+
+
+	/**************************************************
+	Brief: Space columns numbers based on band_number and UI configuration
+	***************************************************/
+
+
+
+
+
+
+
 
 	switch(band_value)
 	{
 		case 0:
+			putcursor(row, col);
 			lcd_send_string("BK");
 			break;
 		case 1:
+			putcursor(row, col);
 			lcd_send_string("BR");
 			break;
 		case 2:
+			putcursor(row, col);
 			lcd_send_string("R");
 			break;
 		case 3:
+			putcursor(row, col);
 			lcd_send_string("O");
 			break;
 		case 4:
+			putcursor(row, col);
 			lcd_send_string("Y");
 			break;
 		case 5:
+			putcursor(row, col);
 			lcd_send_string("G");
 			break;
 		case 6:
+			putcursor(row, col);
 			lcd_send_string("B");
 			break;
 		case 7:
+			putcursor(row, col);
 			lcd_send_string("V");
 			break;
 		case 8:
+			putcursor(row, col);
 			lcd_send_string("GY");
 			break;
 		case 9:
+			putcursor(row, col);
 			lcd_send_string("W");
 			break;
 	}
@@ -170,7 +207,7 @@ void resistor_band(uint8_t band_value)
 Brief: Resets all values in struct R_config
 Return: NONE
 ***************************************************/
-void resistor_flush()
+void resistor_flush(void)
 {
 
 	R_config.r_ADC = 0;
