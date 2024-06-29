@@ -1,0 +1,6 @@
+../Core/Src/main.c:201:6:SystemClock_Config	3
+../Core/Src/main.c:365:6:R_param_init	1
+../Core/Src/main.c:375:6:resistor_measure	1
+../Core/Src/main.c:383:10:GET_ADC_IN4	1
+../Core/Src/main.c:83:5:main	7
+../Core/Src/main.c:402:6:Error_Handler	1

@@ -13,7 +13,6 @@
 #define R_MUX 3.3
 
 extern R_paramTypeDef R_config;
-extern R_paramTypeDef empty;    // Reference for flushing values from previous iteration
 
 
 /**************************************************
@@ -104,7 +103,7 @@ void resistor_decade(void)
 Brief: Parses the standard resistor values to determine the resistor band colors
 Return: NONE
 ***************************************************/
-void resistor_parse(void)
+/*void resistor_parse(void)
 {
 	R_config.r_standard = 120;
 	R_config.decade = 100;
@@ -114,9 +113,7 @@ void resistor_parse(void)
 	lcd_put_cur(0, 0);
 
 
-	/**************************************************
-	Brief: Get 4-band resistor colors
-	***************************************************/
+	//Brief: Get 4-band resistor colors
 	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
 	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
 	if(Std < 100)
@@ -124,9 +121,7 @@ void resistor_parse(void)
 
 	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
 
-	/**************************************************
-	Brief: Get 5-band resistor colors
-	***************************************************/
+	//Brief: Get 5-band resistor colors
 	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
 	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
 	if(Std < 100)
@@ -134,20 +129,18 @@ void resistor_parse(void)
 
 	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
 
-}
+}*/
 
 
 /**************************************************
 Brief: Determines the color bands of the measured resistor
 Return: NONE
 ***************************************************/
-void resistor_band(uint8_t band_number, uint8_t band_value)
+/*void resistor_band(uint8_t band_number, uint8_t band_value)
 {
 
 
-	/**************************************************
-	Brief: Space columns numbers based on band_number and UI configuration
-	***************************************************/
+	//Brief: Space columns numbers based on band_number and UI configuration
 
 
 
@@ -200,7 +193,7 @@ void resistor_band(uint8_t band_number, uint8_t band_value)
 			break;
 	}
 
-}
+}*/
 
 
 /**************************************************

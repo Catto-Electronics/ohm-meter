@@ -108,31 +108,16 @@ int main(void)
   MX_I2C1_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+  	  //notes for taylor to delete
+  	  //20x4
 
-	lcd_init();
-	HAL_Delay(1);
+  lcd_init();
+  HAL_Delay(1);
+  screenMenu();
 
-	lcd_put_cur(0, 0);
-	lcd_send_string("     CATTO      ");
-	lcd_put_cur(1, 0);
-	lcd_send_string("  ELECTRONICS   ");
-	HAL_Delay(500);
+  R_param_init();
 
-	lcd_put_cur(0, 0);
-	lcd_send_string("   OHM  METER   ");
-	lcd_put_cur(1, 0);
-	lcd_send_string("                ");
-	HAL_Delay(500);
-
-	lcd_put_cur(0, 0);
-	lcd_send_string("Select E-Series ");
-	lcd_put_cur(1, 0);
-	lcd_send_string("6 12  24  48  96");
-	HAL_Delay(200);
-
-	R_param_init();
-
-	R_config.Eseries = 24;
+  R_config.Eseries = 24;
 
   /* USER CODE END 2 */
 
@@ -157,30 +142,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		char meas[16];
-		char match[16];
-		char er[16];
+		char writeString[16];
 
 
 		R_config.r_ADC = GET_ADC_IN4();
 		resistor_measure();
 
-		lcd_put_cur(0, 0);
-		lcd_send_string("Value:");
-		lcd_put_cur(0, 6);
-		sprintf(meas, "%.3f   ", R_config.r_measured);
-		lcd_send_string(meas);
-		lcd_put_cur(1, 0);
-		lcd_send_string("Std:");
-		lcd_put_cur(1, 4);
-		sprintf(match, "%f  ", R_config.r_standard);
-		lcd_send_string(match);
-		lcd_put_cur(2, 9);
-		lcd_send_string("Er:");
-		lcd_put_cur(1, 12);
-		sprintf(er, "%.1f%%", R_config.r_percentage);
-		lcd_send_string(er);
-		HAL_Delay(500);
+		screenMeasurements(writeString);
+//		lcd_put_cur(0, 0);
+//		sprintf(writeString, "Value:%.3f          ", R_config.r_measured);
+//		lcd_send_string(writeString);
+//		lcd_put_cur(1, 0);
+//		sprintf(writeString, "Std:%d  Er:%.1f%%", (uint32_t)R_config.r_standard, R_config.r_percentage);
+//		lcd_send_string(writeString);
+//		HAL_Delay(500);
 
 		//resistor_parse();
 		//HAL_Delay(2000);
