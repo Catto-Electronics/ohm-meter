@@ -12,7 +12,28 @@
 
 #define R_MUX 3.3
 
+
+extern ADC_HandleTypeDef hadc1;  // change your handler here accordingly
 extern R_paramTypeDef R_config;
+
+
+uint16_t GET_ADC_IN4(void);
+void resistor_measure(void);
+
+
+
+uint16_t GET_ADC_IN4(void)
+{
+	HAL_ADCEx_Calibration_Start(&hadc1);
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, 100);
+
+	uint16_t i = HAL_ADC_GetValue(&hadc1);
+
+	HAL_ADC_Stop(&hadc1);
+
+	return i;
+}
 
 
 /**************************************************
@@ -22,7 +43,7 @@ Return: Resistance in Ohms
 double resisor_value(double decade)
 {
 
-	double raw = R_config.r_ADC;
+	double raw = GET_ADC_IN4();
 	double decade_resistor = decade * R_MUX;
 	double ADC_ratio;
 	double resistor_value;
@@ -89,7 +110,7 @@ Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
 void resistor_decade(void)
 {
 
-	double decade = 100;
+	double decade = 100000;
 
 		if((resisor_value(decade) >= decade) && (resisor_value(decade) < decade*10))
 		{
@@ -103,7 +124,7 @@ void resistor_decade(void)
 Brief: Parses the standard resistor values to determine the resistor band colors
 Return: NONE
 ***************************************************/
-/*void resistor_parse(void)
+void resistor_parse(void)
 {
 	R_config.r_standard = 120;
 	R_config.decade = 100;
@@ -114,37 +135,32 @@ Return: NONE
 
 
 	//Brief: Get 4-band resistor colors
-	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
-	if(Std < 100)
-		resistor_band(Std % (decade/100)); // Third band value
+	resistor_band(1, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
 
-	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
+
 
 	//Brief: Get 5-band resistor colors
-	resistor_band(col, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(col, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
-	if(Std < 100)
-		resistor_band(Std % (decade/100)); // Third band value
+	resistor_band(1, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(3, (uint32_t)Std % (uint32_t)(R_config.decade/100));  // Second band value
 
-	resistor_band(col ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(4 ,log10(R_config.decade));      // Decade multiplier
 
-}*/
+}
 
 
 /**************************************************
 Brief: Determines the color bands of the measured resistor
 Return: NONE
 ***************************************************/
-/*void resistor_band(uint8_t band_number, uint8_t band_value)
+void resistor_band(uint8_t band_number, uint8_t band_value)
 {
 
 
 	//Brief: Space columns numbers based on band_number and UI configuration
-
-
-
-
+	uint8_t band_index = 0;
 
 
 
@@ -152,48 +168,54 @@ Return: NONE
 	switch(band_value)
 	{
 		case 0:
-			putcursor(row, col);
-			lcd_send_string("BK");
+			R_config.color_bands[band_index] = "BK ";
 			break;
 		case 1:
-			putcursor(row, col);
-			lcd_send_string("BR");
+			R_config.color_bands[band_index] = "BR ";
 			break;
 		case 2:
-			putcursor(row, col);
-			lcd_send_string("R");
+			R_config.color_bands[band_index] = "R ";
 			break;
 		case 3:
-			putcursor(row, col);
-			lcd_send_string("O");
+			R_config.color_bands[band_index] = "O ";
 			break;
 		case 4:
-			putcursor(row, col);
-			lcd_send_string("Y");
+			R_config.color_bands[band_index] = "Y ";
 			break;
 		case 5:
-			putcursor(row, col);
-			lcd_send_string("G");
+			R_config.color_bands[band_index] = "G ";
 			break;
 		case 6:
-			putcursor(row, col);
-			lcd_send_string("B");
+			R_config.color_bands[band_index] = "B ";
 			break;
 		case 7:
-			putcursor(row, col);
-			lcd_send_string("V");
+			R_config.color_bands[band_index] = "V ";
 			break;
 		case 8:
-			putcursor(row, col);
-			lcd_send_string("GY");
+			R_config.color_bands[band_index] = "GY ";
 			break;
 		case 9:
-			putcursor(row, col);
-			lcd_send_string("W");
+			R_config.color_bands[band_index] = "W ";
+			break;
+		default:
+			R_config.color_bands[band_index] = "NA";
 			break;
 	}
 
-}*/
+}
+
+
+/**************************************************
+Brief: Executes all necessary functions for data acquisition and conversion
+Return: NONE
+***************************************************/
+void resistor_measure(void)
+{
+	resistor_decade();
+	resistor_match();
+	resistor_error();
+	resistor_parse();
+}
 
 
 /**************************************************
@@ -203,7 +225,6 @@ Return: NONE
 void resistor_flush(void)
 {
 
-	R_config.r_ADC = 0;
 	R_config.r_measured = 0;
 	R_config.r_percentage = 0;
 	R_config.r_standard = 0;
