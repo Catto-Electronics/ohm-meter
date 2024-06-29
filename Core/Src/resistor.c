@@ -19,7 +19,7 @@ extern R_paramTypeDef R_config;
 Brief: Reads the ADC output and converts it into the value of the measured resistor in ohms
 Return: Resistance in Ohms
 ***************************************************/
-uint32_t resisor_value(double decade)
+double resisor_value(double decade)
 {
 
 	double raw = R_config.r_ADC;
