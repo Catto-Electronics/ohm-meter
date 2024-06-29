@@ -2,6 +2,6 @@
 
 void screenMenu(void);
 
-void screenMeasurements(char);
+void screenMeasurements(void);
 
 void truncate(double resistor_value, double standard_value);

@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "resistor.h"
 #include "i2c-lcd.h"
+#include "LCD_UI.h"
 #include "math.h"
 /* USER CODE END Includes */
 
@@ -123,8 +124,8 @@ int main(void)
   /* Initialize leds */
   BSP_LED_Init(LED_GREEN);
 
-  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
+  /* Initialize User push-button without interrupt mode. */
+  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
   BspCOMInit.BaudRate   = 115200;
@@ -141,13 +142,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		char writeString[16];
 
-
-		R_config.r_ADC = GET_ADC_IN4();
 		resistor_measure();
-
-		screenMeasurements(writeString);
+		screenMeasurements();
 
 		resistor_flush();
 
@@ -315,8 +312,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -329,32 +324,6 @@ static void MX_GPIO_Init(void)
 void R_param_init(void)
 {
 	//R_config.Eseries = 24;
-	//R_config.decade = 100;
-}
-
-/**************************************************
-Brief: Resets all values in struct R_config
-Return: NONE
-***************************************************/
-void resistor_measure(void)
-{
-	resistor_decade();
-	resistor_match();
-	resistor_error();
-	//resistor_band();
-}
-
-uint16_t GET_ADC_IN4(void)
-{
-	HAL_ADCEx_Calibration_Start(&hadc1);
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, 100);
-
-	uint16_t i = HAL_ADC_GetValue(&hadc1);
-
-	HAL_ADC_Stop(&hadc1);
-
-	return i;
 }
 
 /* USER CODE END 4 */

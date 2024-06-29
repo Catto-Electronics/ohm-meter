@@ -7,8 +7,10 @@ extern R_paramTypeDef R_config;
 
 void truncate(double resistor_value, double standard_value);
 
+
+char writeString[16];
 char R_Val[7];
-char E_Val[4];
+char E_Val[5];
 
 void screenMenu(void){
 	lcd_put_cur(0, 0);
@@ -30,14 +32,14 @@ void screenMenu(void){
 	HAL_Delay(1000);
 }
 
-void screenMeasurements(char writeString[])
+void screenMeasurements(void)
 {
 	truncate(R_config.r_measured, R_config.r_standard);
 	lcd_put_cur(0, 0);
-	sprintf(writeString, "Value:%s          ", R_Val);
+	sprintf(writeString, "Value:%6s          ", R_Val);
 	lcd_send_string(writeString);
 	lcd_put_cur(1, 0);
-	sprintf(writeString, "E-Val:%s Er:%.1f%%   ", E_Val, R_config.r_percentage);
+	sprintf(writeString, "EVal:%4s Er:%.1f%%    ", E_Val, R_config.r_percentage);
 	lcd_send_string(writeString);
 	HAL_Delay(500);
 }
