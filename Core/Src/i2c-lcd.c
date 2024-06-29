@@ -8,6 +8,7 @@ extern I2C_HandleTypeDef hi2c1;  // change your handler here accordingly
 #define SLAVE_ADDRESS_LCD 0x4E // change this according to your setup
 
 #define RS_BIT 0 // Register select bit
+#define RW_BIT 1 // Read/Write bit
 #define EN_BIT 2 // Enable bit
 #define BL_BIT 3 // Backlight bit
 #define D4_BIT 4 // Data 4 bit
@@ -96,7 +97,6 @@ void lcd_init (void)
 	lcd_send_cmd (0x08); //Display on/off control --> D=0,C=0, B=0  ---> display off
 	HAL_Delay(1);
 	lcd_send_cmd (0x01);  // clear display
-	HAL_Delay(1);
 	HAL_Delay(1);
 	lcd_send_cmd (0x06); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
 	HAL_Delay(1);
