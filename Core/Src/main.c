@@ -108,11 +108,10 @@ int main(void)
   MX_I2C1_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  	  //notes for taylor to delete
-  	  //20x4
 
   lcd_init();
   HAL_Delay(1);
+
   screenMenu();
 
   R_param_init();
@@ -149,16 +148,6 @@ int main(void)
 		resistor_measure();
 
 		screenMeasurements(writeString);
-//		lcd_put_cur(0, 0);
-//		sprintf(writeString, "Value:%.3f          ", R_config.r_measured);
-//		lcd_send_string(writeString);
-//		lcd_put_cur(1, 0);
-//		sprintf(writeString, "Std:%d  Er:%.1f%%", (uint32_t)R_config.r_standard, R_config.r_percentage);
-//		lcd_send_string(writeString);
-//		HAL_Delay(500);
-
-		//resistor_parse();
-		//HAL_Delay(2000);
 
 		resistor_flush();
 
