@@ -135,18 +135,18 @@ void resistor_parse(void)
 
 
 	//Brief: Get 4-band resistor colors
-	resistor_band(1, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(0, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(1, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
 
-	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(2 ,log10(R_config.decade));      // Decade multiplier
 
 
 	//Brief: Get 5-band resistor colors
-	resistor_band(1, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
-	resistor_band(3, (uint32_t)Std % (uint32_t)(R_config.decade/100));  // Second band value
+	resistor_band(0, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
+	resistor_band(1, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/100));  // Second band value
 
-	resistor_band(4 ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
 
 }
 

@@ -144,6 +144,7 @@ int main(void)
 	{
 
 		resistor_measure();
+
 		screenMeasurements();
 
 		resistor_flush();
