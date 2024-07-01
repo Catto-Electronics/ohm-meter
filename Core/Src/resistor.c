@@ -10,6 +10,7 @@
 #include "i2c-lcd.h"
 #include "math.h"
 
+
 #define R_MUX 3.3
 
 
@@ -93,7 +94,7 @@ void resistor_match(void)
 	std_value = round(decade*pow(10, r_index/Eseries)/(decade/10));
 	std_value *= decade/10;
 
-	if(Eseries == 24 && (int)r_index%24 >= 11 && (int)r_index%24 <= 17)
+	if(Eseries == 24 && (int)r_index%24 >= 10 && (int)r_index%24 <= 16)
 	{
 		std_value += 1*decade/10;
 	}
@@ -110,13 +111,13 @@ Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
 void resistor_decade(void)
 {
 
-	double decade = 100000;
+	double decade = R_config.decade;
 
-		if((resisor_value(decade) >= decade) && (resisor_value(decade) < decade*10))
-		{
-			R_config.decade = decade;
-			R_config.r_measured = resisor_value(decade);
-		}
+	if((resisor_value(decade) >= decade) && (resisor_value(decade) < decade*10))
+	{
+		R_config.decade = decade;
+		R_config.r_measured = resisor_value(decade);
+	}
 
 }
 
@@ -126,9 +127,6 @@ Return: NONE
 ***************************************************/
 void resistor_parse(void)
 {
-	R_config.r_standard = 120;
-	R_config.decade = 100;
-
 	uint32_t Std = R_config.r_standard;
 
 	lcd_put_cur(0, 0);
@@ -147,7 +145,6 @@ void resistor_parse(void)
 	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/100));  // Second band value
 
 	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
-
 }
 
 
