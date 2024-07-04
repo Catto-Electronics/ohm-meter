@@ -119,6 +119,7 @@ int main(void)
 
   R_config.Eseries = 24;
 
+  HAL_ADCEx_Calibration_Start(&hadc1);
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -149,11 +150,12 @@ int main(void)
 
 		resistor_flush();
 
-		R_config.decade *= 10;
+		// To Test measurements for all decades
+		/*R_config.decade *= 10;
 		if(R_config.decade > 10000000)
 		{
 			R_config.decade = 1;
-		}
+		}*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -330,7 +332,6 @@ static void MX_GPIO_Init(void)
 void R_param_init(void)
 {
 	R_config.Eseries = 24;
-	R_config.decade = 1;
 }
 
 /* USER CODE END 4 */

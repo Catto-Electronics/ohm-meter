@@ -83,7 +83,8 @@ void truncate(double resistor_value, double standard_value)
 			sprintf(E_Val, "%.0fM ", standard_value / 1000000);
 			break;
 		default:
-
+			sprintf(R_Val, "%.2f  ", resistor_value);
+			sprintf(E_Val, "%.1f ", standard_value);
 			break;
 
 	}

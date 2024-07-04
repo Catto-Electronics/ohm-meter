@@ -5,6 +5,7 @@
  *      Author: Rafael Reyes
  */
 
+#include "main.h"
 #include "stdio.h"
 #include "resistor.h"
 #include "i2c-lcd.h"
@@ -20,20 +21,31 @@ extern R_paramTypeDef R_config;
 
 uint16_t GET_ADC_IN4(void);
 void resistor_measure(void);
+double resistor_MUX(void);
+void resistor_GPIO(void);
+double r_standard(double index);
+
 
 
 
 uint16_t GET_ADC_IN4(void)
 {
-	HAL_ADCEx_Calibration_Start(&hadc1);
+	uint32_t ADC = 0;
+
+	for(int i = 0; i < 16; i++)
+	{
+
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, 100);
 
-	uint16_t i = HAL_ADC_GetValue(&hadc1);
+	ADC += HAL_ADC_GetValue(&hadc1);
 
 	HAL_ADC_Stop(&hadc1);
+	}
 
-	return i;
+	ADC /= 16;
+
+	return ADC;
 }
 
 
@@ -55,6 +67,11 @@ double resisor_value(double decade)
 
 	resistor_value = (ADC_ratio * decade_resistor)/(1 - ADC_ratio);
 
+ 	if(decade <= 1)
+	{
+		resistor_value = (ADC_ratio * 10 * R_MUX)/(1 - ADC_ratio); // Uses the 10-Decade resistor for 1-Decade measurements
+	}															   // To prevent a large current draw through resistors
+
 	return resistor_value;
 }
 
@@ -67,10 +84,8 @@ Return: NONE
 void resistor_error(void)
 {
 	double error_percentage;
-	double measured = R_config.r_measured;
-	double std_value = R_config.r_standard;
 
-	error_percentage = ((measured - std_value) / std_value) * 100;
+	error_percentage = ((R_config.r_measured - R_config.r_standard) / R_config.r_standard) * 100;
 
 	R_config.r_percentage = error_percentage;
 }
@@ -83,24 +98,43 @@ Return: NONE
 void resistor_match(void)
 {
 
-	double Eseries = R_config.Eseries;
-	double decade = R_config.decade;
-	double measured = R_config.r_measured;
-	double std_value;
 	double r_index;
 
-	r_index = round(Eseries*(log10(measured/decade)));
+	r_index = R_config.Eseries*(log10(R_config.r_measured/R_config.decade));
 
-	std_value = round(decade*pow(10, r_index/Eseries)/(decade/10));
-	std_value *= decade/10;
 
-	if(Eseries == 24 && (int)r_index%24 >= 10 && (int)r_index%24 <= 16)
+	// Compares the standard value to the measured value to compensate for rounding
+
+	if(fabs(r_standard(ceil(r_index)) - R_config.r_measured) < fabs(r_standard(floor(r_index)) - R_config.r_measured))
+		r_index = ceil(r_index);
+	else
+		r_index = floor(r_index);
+
+
+	R_config.r_standard = r_standard(r_index);
+
+}
+
+/**************************************************
+Brief: Sorts through measured values and determines the appropriate decade
+Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
+***************************************************/
+double r_standard(double index)
+{
+	double std_value;
+
+	std_value = round(R_config.decade*pow(10, index/R_config.Eseries)/(R_config.decade/10));
+	std_value *= R_config.decade/10;
+
+	if(R_config.Eseries == 24)
 	{
-		std_value += 1*decade/10;
+		if((int)index%24 >= 10 && (int)index%24 <= 16)
+			std_value += 1*R_config.decade/10;
+		if((int)index == 22)
+			std_value -= 1*R_config.decade/10;
 	}
 
-	R_config.r_standard = std_value;
-
+	return std_value;
 }
 
 
@@ -111,7 +145,8 @@ Return: Resistor decade 10, 100, 1k, 10k, 100k, 1M
 void resistor_decade(void)
 {
 
-	double decade = R_config.decade;
+	double decade = 1000;
+
 
 	if((resisor_value(decade) >= decade) && (resisor_value(decade) < decade*10))
 	{
@@ -121,28 +156,27 @@ void resistor_decade(void)
 
 }
 
+
 /**************************************************
 Brief: Parses the standard resistor values to determine the resistor band colors
 Return: NONE
 ***************************************************/
 void resistor_parse(void)
 {
-	uint32_t Std = R_config.r_standard;
-
 	lcd_put_cur(0, 0);
 
 
 	//Brief: Get 4-band resistor colors
-	resistor_band(0, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(1, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(0, (uint32_t)R_config.r_standard % (uint32_t)R_config.decade);       // First band value
+	resistor_band(1, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/10));  // Second band value
 
 	resistor_band(2 ,log10(R_config.decade));      // Decade multiplier
 
 
 	//Brief: Get 5-band resistor colors
-	resistor_band(0, (uint32_t)Std % (uint32_t)R_config.decade);       // First band value
-	resistor_band(1, (uint32_t)Std % (uint32_t)(R_config.decade/10));  // Second band value
-	resistor_band(2, (uint32_t)Std % (uint32_t)(R_config.decade/100));  // Second band value
+	resistor_band(0, (uint32_t)R_config.r_standard % (uint32_t)R_config.decade);       // First band value
+	resistor_band(1, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(2, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/100));  // Second band value
 
 	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
 }

@@ -1,8 +1,9 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-1\#ChannelRegularConversion=ADC_CHANNEL_4
-ADC1.IPParameters=Rank-1\#ChannelRegularConversion,RankArg-1\#ChannelRegularConversion,master,Channel-1\#ChannelRegularConversion,SelectedChannel,SamplingTime-1\#ChannelRegularConversion,NbrOfConversionFlag,NbrOfConversion,TriggerFrequencyMode,SamplingTimeCommon1
+ADC1.IPParameters=Rank-1\#ChannelRegularConversion,RankArg-1\#ChannelRegularConversion,master,Channel-1\#ChannelRegularConversion,SelectedChannel,SamplingTime-1\#ChannelRegularConversion,NbrOfConversionFlag,NbrOfConversion,TriggerFrequencyMode,SamplingTimeCommon1,OversamplingMode
 ADC1.NbrOfConversion=1
 ADC1.NbrOfConversionFlag=1
+ADC1.OversamplingMode=DISABLE
 ADC1.Rank-1\#ChannelRegularConversion=1
 ADC1.RankArg-1\#ChannelRegularConversion=ADC_REGULAR_RANK_1
 ADC1.SamplingTime-1\#ChannelRegularConversion=ADC_SAMPLINGTIME_COMMON_1
