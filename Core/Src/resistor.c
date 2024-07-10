@@ -15,11 +15,13 @@
 #define R_MUX 3.3
 
 
-extern ADC_HandleTypeDef hadc1;  // change your handler here accordingly
+extern ADC_HandleTypeDef hadc1;
 extern R_paramTypeDef R_config;
 
+extern uint32_t adc_buffer;
+extern uint32_t adc_avg;
 
-uint16_t GET_ADC_IN4(void);
+
 void resistor_measure(void);
 double resistor_MUX(void);
 void resistor_GPIO(void);
@@ -27,25 +29,17 @@ double r_standard(double index);
 
 
 
-
-uint16_t GET_ADC_IN4(void)
+void GET_ADC_IN4(void)
 {
-	uint32_t ADC = 0;
-
-	for(int i = 0; i < 16; i++)
+	adc_buffer = 0;
+	adc_avg = 0;
+	for(int i  = 0; i < 16; i++)
 	{
-
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, 100);
-
-	ADC += HAL_ADC_GetValue(&hadc1);
-
-	HAL_ADC_Stop(&hadc1);
+		HAL_ADC_Start_DMA(&hadc1, &adc_buffer, 1);
+		HAL_Delay(1);
 	}
 
-	ADC /= 16;
-
-	return ADC;
+	R_config.ADC = adc_avg / 16;
 }
 
 
@@ -56,29 +50,26 @@ Return: Resistance in Ohms
 double resisor_value(double decade)
 {
 
-	double raw = GET_ADC_IN4();
+	double raw = R_config.ADC;
 	double decade_resistor = decade * R_MUX;
 	double ADC_ratio;
 	double resistor_value;
 
 	ADC_ratio = ((double)raw/4096); // percentage of total voltage
 
-	//R_config.r_measured = ((decade)/ADC_ratio)-(decade); // Old ADC to Resistance conversion
+	//R_config.r_measured = ((decade)/ADC_ratio)-(decade); // Known resistor tied to GND
 
-	resistor_value = (ADC_ratio * decade_resistor)/(1 - ADC_ratio);
+	resistor_value = (ADC_ratio * decade_resistor)/(1 - ADC_ratio); // Known resistor tied to VCC 3.3V
 
  	if(decade <= 1)
-	{
-		resistor_value = (ADC_ratio * 10 * R_MUX)/(1 - ADC_ratio); // Uses the 10-Decade resistor for 1-Decade measurements
-	}															   // To prevent a large current draw through resistors
+		resistor_value = (ADC_ratio * 10 * R_MUX)/(1 - ADC_ratio); // Uses the 10-Decade resistor for 1-Decade measurements														   // To prevent a large current draw through resistors
 
 	return resistor_value;
 }
 
 
 /**************************************************
-Brief: Calculates the percent error of the measured resistor
-	   value with the closest standard value in the series
+Brief: Calculates the percent error of the measured resistor value with the closest standard value in the series
 Return: NONE
 ***************************************************/
 void resistor_error(void)
@@ -123,15 +114,15 @@ double r_standard(double index)
 {
 	double std_value;
 
-	std_value = round(R_config.decade*pow(10, index/R_config.Eseries)/(R_config.decade/10));
-	std_value *= R_config.decade/10;
+	std_value = round(R_config.decade * pow(10, index/R_config.Eseries) / (R_config.decade/10));
+	std_value *= R_config.decade / 10;
 
 	if(R_config.Eseries == 24)
 	{
-		if((int)index%24 >= 10 && (int)index%24 <= 16)
-			std_value += 1*R_config.decade/10;
+		if((int)index % 24 >= 10 && (int)index % 24 <= 16)
+			std_value += R_config.decade/10;
 		if((int)index == 22)
-			std_value -= 1*R_config.decade/10;
+			std_value -= R_config.decade/10;
 	}
 
 	return std_value;
@@ -167,18 +158,18 @@ void resistor_parse(void)
 
 
 	//Brief: Get 4-band resistor colors
-	resistor_band(0, (uint32_t)R_config.r_standard % (uint32_t)R_config.decade);       // First band value
-	resistor_band(1, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/10));  // Second band value
+	resistor_band(0, (uint32_t)R_config.r_standard / (uint32_t)R_config.decade); // First band value
+	resistor_band(1, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
 
-	resistor_band(2 ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(2 ,log10(R_config.decade)); // Decade multiplier
 
 
 	//Brief: Get 5-band resistor colors
-	resistor_band(0, (uint32_t)R_config.r_standard % (uint32_t)R_config.decade);       // First band value
-	resistor_band(1, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/10));  // Second band value
-	resistor_band(2, (uint32_t)R_config.r_standard % (uint32_t)(R_config.decade/100));  // Second band value
+	resistor_band(0, (uint32_t)R_config.r_standard / (uint32_t)R_config.decade); // First band value
+	resistor_band(1, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
+	resistor_band(2, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade/10)) / (R_config.decade/100)); // Third band value
 
-	resistor_band(3 ,log10(R_config.decade));      // Decade multiplier
+	resistor_band(3 ,log10(R_config.decade)); // Decade multiplier
 }
 
 
@@ -229,7 +220,7 @@ void resistor_band(uint8_t band_number, uint8_t band_value)
 			R_config.color_bands[band_index] = "W ";
 			break;
 		default:
-			R_config.color_bands[band_index] = "NA";
+			R_config.color_bands[band_index] = "NA ";
 			break;
 	}
 

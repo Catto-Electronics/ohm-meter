@@ -12,16 +12,21 @@ typedef struct R_paramTypeDef
   double decade;
   double Eseries;
 
+  uint32_t ADC;
+
   double r_measured;
   double r_standard;
   double r_percentage;
+
+  uint8_t flags;
 
   char* color_bands[14];
 
 } R_paramTypeDef;
 
 
-uint16_t GET_ADC_IN4(void);
+
+void GET_ADC_IN4(void);
 double resistor_value(double decade);
 void resistor_error(void);
 void resistor_match(void);
