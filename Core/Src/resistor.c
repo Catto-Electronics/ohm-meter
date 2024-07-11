@@ -18,29 +18,12 @@
 extern ADC_HandleTypeDef hadc1;
 extern R_paramTypeDef R_config;
 
-extern uint32_t adc_buffer;
-extern uint32_t adc_avg;
-
 
 void resistor_measure(void);
 double resistor_MUX(void);
 void resistor_GPIO(void);
 double r_standard(double index);
 
-
-
-void GET_ADC_IN4(void)
-{
-	adc_buffer = 0;
-	adc_avg = 0;
-	for(int i  = 0; i < 16; i++)
-	{
-		HAL_ADC_Start_DMA(&hadc1, &adc_buffer, 1);
-		HAL_Delay(1);
-	}
-
-	R_config.ADC = adc_avg / 16;
-}
 
 
 /**************************************************

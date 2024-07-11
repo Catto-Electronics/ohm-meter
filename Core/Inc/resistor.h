@@ -25,8 +25,6 @@ typedef struct R_paramTypeDef
 } R_paramTypeDef;
 
 
-
-void GET_ADC_IN4(void);
 double resistor_value(double decade);
 void resistor_error(void);
 void resistor_match(void);
