@@ -25,7 +25,6 @@ void resistor_GPIO(void);
 double r_standard(double index);
 
 
-
 /**************************************************
 Brief: Reads the ADC output and converts it into the value of the measured resistor in ohms
 Return: Resistance in Ohms
@@ -142,17 +141,20 @@ void resistor_parse(void)
 
 	//Brief: Get 4-band resistor colors
 	resistor_band(0, (uint32_t)R_config.r_standard / (uint32_t)R_config.decade); // First band value
-	resistor_band(1, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
+	resistor_band(R_config.color_index, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
 
-	resistor_band(2 ,log10(R_config.decade)); // Decade multiplier
+	resistor_band(R_config.color_index ,log10(R_config.decade)); // Decade multiplier
 
+	sprintf(R_config.band5, "5Band:%13s", R_config.color_bands);
 
 	//Brief: Get 5-band resistor colors
 	resistor_band(0, (uint32_t)R_config.r_standard / (uint32_t)R_config.decade); // First band value
-	resistor_band(1, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
-	resistor_band(2, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade/10)) / (R_config.decade/100)); // Third band value
+	resistor_band(R_config.color_index, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10)); // Second band value
+	resistor_band(R_config.color_index, ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade/10)) / (R_config.decade/100)); // Third band value
 
-	resistor_band(3 ,log10(R_config.decade)); // Decade multiplier
+	resistor_band(R_config.color_index ,log10(R_config.decade)); // Decade multiplier
+
+	sprintf(R_config.band5, "5Band:%13s",R_config.color_bands);
 }
 
 
@@ -160,50 +162,67 @@ void resistor_parse(void)
 Brief: Determines the color bands of the measured resistor
 Return: NONE
 ***************************************************/
-void resistor_band(uint8_t band_number, uint8_t band_value)
+void resistor_band(uint8_t band_index, uint8_t band_value)
 {
 
 
 	//Brief: Space columns numbers based on band_number and UI configuration
-	uint8_t band_index = 0;
-
-
-
+	if(band_index == 0)
+		R_config.color_index = 0;
 
 	switch(band_value)
 	{
 		case 0:
-			R_config.color_bands[band_index] = "BK ";
+			R_config.color_bands[band_index] = 'B';
+			R_config.color_index++;
+			R_config.color_bands[band_index] = 'K';
+			R_config.color_index += 2;
 			break;
 		case 1:
-			R_config.color_bands[band_index] = "BR ";
+			R_config.color_bands[band_index] = 'B';
+			R_config.color_index++;
+			R_config.color_bands[band_index] = 'R';
+			R_config.color_index += 2;
 			break;
 		case 2:
-			R_config.color_bands[band_index] = "R ";
+			R_config.color_bands[band_index] = 'R';
+			R_config.color_index += 2;
 			break;
 		case 3:
-			R_config.color_bands[band_index] = "O ";
+			R_config.color_bands[band_index] = 'O';
+			R_config.color_index += 2;
 			break;
 		case 4:
-			R_config.color_bands[band_index] = "Y ";
+			R_config.color_bands[band_index] = 'Y';
+			R_config.color_index += 2;
 			break;
 		case 5:
-			R_config.color_bands[band_index] = "G ";
+			R_config.color_bands[band_index] = 'G';
+			R_config.color_index += 2;
 			break;
 		case 6:
-			R_config.color_bands[band_index] = "B ";
+			R_config.color_bands[band_index] = 'B';
+			R_config.color_index += 2;
 			break;
 		case 7:
-			R_config.color_bands[band_index] = "V ";
+			R_config.color_bands[band_index] = 'V';
+			R_config.color_index += 2;
 			break;
 		case 8:
-			R_config.color_bands[band_index] = "GY ";
+			R_config.color_bands[band_index] = 'G';
+			R_config.color_index++;
+			R_config.color_bands[band_index] = 'Y';
+			R_config.color_index += 2;
 			break;
 		case 9:
-			R_config.color_bands[band_index] = "W ";
+			R_config.color_bands[band_index] = 'W';
+			R_config.color_index += 2;
 			break;
 		default:
-			R_config.color_bands[band_index] = "NA ";
+			R_config.color_bands[band_index] = 'N';
+			R_config.color_index++;
+			R_config.color_bands[band_index] = 'A';
+			R_config.color_index += 2;
 			break;
 	}
 
