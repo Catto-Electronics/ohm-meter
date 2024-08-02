@@ -20,7 +20,10 @@ typedef struct R_paramTypeDef
 
   uint8_t flags;
 
-  char* color_bands[14];
+  char color_bands[14];
+  char band4[21];
+  char band5[21];
+  uint8_t color_index;
 
 } R_paramTypeDef;
 
