@@ -42,7 +42,7 @@ void screenMeasurements(void)
 	sprintf(writeString, "EVal:%4s  Er:%.1f%%  ", E_Val, R_config.r_percentage);
 	lcd_send_string(writeString);
 	lcd_put_cur(2, 0);
-	lcd_send_string(R_config.band5);
+	lcd_send_string(R_config.band4);
 	lcd_put_cur(3, 0);
 	lcd_send_string(R_config.band5);
 	HAL_Delay(500);
