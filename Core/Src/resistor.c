@@ -145,8 +145,14 @@ void resistor_parse(void)
 
 	resistor_band(R_config.color_index ,log10(R_config.decade)); // Decade multiplier
 
+
 	resistor_band(0, 1);
 	resistor_band(1, 4);
+	resistor_band(7, 1);
+
+
+	resistor_band(0, 1);
+	resistor_band(4, 1);
 	resistor_band(7, 1);
 
 	sprintf(R_config.band4, "4Band:%s", R_config.color_bands);
@@ -171,62 +177,62 @@ void resistor_band(uint8_t band_index, uint8_t band_value)
 
 
 	//Brief: Space columns numbers based on band_number and UI configuration
-	if(band_index == 0)
-		R_config.color_index = 0;
+	//if(band_index == 0)
+		//R_config.color_index = 0;
 
 
 	switch(band_value)
 	{
 		case 0:
-			R_config.color_bands[R_config.color_index] = 'B';
+			R_config.color_bands[band_index] = 'B';
 			R_config.color_index++;
-			R_config.color_bands[R_config.color_index] = 'K';
+			R_config.color_bands[band_index] = 'K';
 			R_config.color_index += 2;
 			break;
 		case 1:
-			R_config.color_bands[R_config.color_index] = 'B';
+			R_config.color_bands[band_index] = 'B';
 			R_config.color_index++;
-			R_config.color_bands[R_config.color_index] = 'R';
+			R_config.color_bands[band_index] = 'R';
 			R_config.color_index += 2;
 			break;
 		case 2:
-			R_config.color_bands[R_config.color_index] = 'R';
+			R_config.color_bands[band_index] = 'R';
 			R_config.color_index += 2;
 			break;
 		case 3:
-			R_config.color_bands[R_config.color_index] = 'O';
+			R_config.color_bands[band_index] = 'O';
 			R_config.color_index += 2;
 			break;
 		case 4:
-			R_config.color_bands[R_config.color_index] = 'Y';
+			R_config.color_bands[band_index] = 'Y';
 			R_config.color_index += 2;
 			break;
 		case 5:
-			R_config.color_bands[R_config.color_index] = 'G';
+			R_config.color_bands[band_index] = 'G';
 			R_config.color_index += 2;
 			break;
 		case 6:
-			R_config.color_bands[R_config.color_index] = 'B';
+			R_config.color_bands[band_index] = 'B';
 			R_config.color_index += 2;
 			break;
 		case 7:
-			R_config.color_bands[R_config.color_index] = 'V';
+			R_config.color_bands[band_index] = 'V';
 			R_config.color_index += 2;
 			break;
 		case 8:
-			R_config.color_bands[R_config.color_index] = 'G';
+			R_config.color_bands[band_index] = 'G';
 			R_config.color_index++;
-			R_config.color_bands[R_config.color_index] = 'Y';
+			R_config.color_bands[band_index] = 'Y';
 			R_config.color_index += 2;
 			break;
 		case 9:
-			R_config.color_bands[R_config.color_index] = 'W';
+			R_config.color_bands[band_index] = 'W';
 			R_config.color_index += 2;
 			break;
 		default:
-			R_config.color_bands[R_config.color_index] = 'N';
+			R_config.color_bands[band_index] = 'N';
 			R_config.color_index++;
-			R_config.color_bands[R_config.color_index] = 'A';
+			R_config.color_bands[band_index] = 'A';
 			R_config.color_index += 2;
 			break;
 	}
