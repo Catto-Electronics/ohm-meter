@@ -150,11 +150,6 @@ void resistor_parse(void)
 	resistor_band(1, 4);
 	resistor_band(7, 1);
 
-
-	resistor_band(0, 1);
-	resistor_band(4, 1);
-	resistor_band(7, 1);
-
 	sprintf(R_config.band4, "4Band:%s", R_config.color_bands);
 
 	//Brief: Get 5-band resistor colors
