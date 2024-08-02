@@ -145,7 +145,11 @@ void resistor_parse(void)
 
 	resistor_band(R_config.color_index ,log10(R_config.decade)); // Decade multiplier
 
-	sprintf(R_config.band4, "4Band:%13s", R_config.color_bands);
+	resistor_band(0, 1);
+	resistor_band(1, 4);
+	resistor_band(7, 1);
+
+	sprintf(R_config.band4, "4Band:%s", R_config.color_bands);
 
 	//Brief: Get 5-band resistor colors
 	resistor_band(0, (uint32_t)R_config.r_standard / (uint32_t)R_config.decade); // First band value
@@ -154,7 +158,7 @@ void resistor_parse(void)
 
 	resistor_band(R_config.color_index ,log10(R_config.decade)); // Decade multiplier
 
-	sprintf(R_config.band5, "5Band:%13s",R_config.color_bands);
+	sprintf(R_config.band5, "5Band:%s",R_config.color_bands);
 }
 
 
