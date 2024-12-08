@@ -143,6 +143,12 @@ void resistor_parse(void)
 	uint32_t band3 = log10(R_config.decade/10);
 	uint32_t band4;
 
+	if(band1 == 10)
+	{
+		band1 = 1;
+		band3++;
+	}
+
 	//Brief: Get 4-band resistor colors
 	resistor_band(0, band1); // First band value
 	resistor_band(R_config.color_index, band2); // Second band value
@@ -152,14 +158,19 @@ void resistor_parse(void)
 	for(int i = R_config.color_index; i < 13; i++)
 		R_config.color_bands[i] = ' ';
 
-
 	sprintf(R_config.band4, "4Band:%s", R_config.color_bands);
+
 
 	band1 = (uint32_t)R_config.r_standard / (uint32_t)R_config.decade;
 	band2 = ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade)) / (R_config.decade/10);
 	band3 = ((uint32_t)(R_config.r_standard) % ((uint32_t)R_config.decade/10)) / (R_config.decade/100);
 	band4 = log10(R_config.decade/100);
 
+	if(band1 == 10)
+		{
+			band1 = 1;
+			band4++;
+		}
 
 	//Brief: Get 5-band resistor colors
 	resistor_band(0, band1); // First band value
@@ -176,7 +187,7 @@ void resistor_parse(void)
 
 
 /**************************************************
-Brief: Determines the color bands of the measured resistor
+Brief: Selects the appropriate characters for a selected color
 Return: NONE
 ***************************************************/
 void resistor_band(uint32_t band_index, uint32_t band_value)
@@ -190,6 +201,22 @@ void resistor_band(uint32_t band_index, uint32_t band_value)
 
 	switch(band_value)
 	{
+		case -2:
+			R_config.color_bands[R_config.color_index] = 'S';
+			R_config.color_index++;
+			R_config.color_bands[R_config.color_index] = 'I';
+			R_config.color_index++;
+			R_config.color_bands[R_config.color_index] = ' ';
+			R_config.color_index++;
+			break;
+		case -1:
+			R_config.color_bands[R_config.color_index] = 'G';
+			R_config.color_index++;
+			R_config.color_bands[R_config.color_index] = 'D';
+			R_config.color_index++;
+			R_config.color_bands[R_config.color_index] = ' ';
+			R_config.color_index++;
+			break;
 		case 0:
 			R_config.color_bands[R_config.color_index] = 'B';
 			R_config.color_index++;
