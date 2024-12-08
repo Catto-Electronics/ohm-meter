@@ -34,7 +34,7 @@ void resistor_match(void);
 double r_standard(double index);
 void resistor_decade(void);
 void resistor_parse(void);
-void resistor_band(uint8_t band_number, uint8_t band_value);
+void resistor_band(uint32_t band_number, uint32_t band_value);
 void resistor_measure(void);
 void resistor_flush(void);
 
